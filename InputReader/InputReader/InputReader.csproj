@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Native\HiddenWindow.cs" />
     <Compile Include="Native\NativeMethods.cs" />
     <Compile Include="Native\ButtonFlag.cs" />
     <Compile Include="Native\MouseFlag.cs" />

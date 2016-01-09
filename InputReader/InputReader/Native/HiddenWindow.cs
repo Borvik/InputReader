@@ -16,7 +16,7 @@ namespace Treorisoft.InputReader.Native
             this.CreateHandle(new CreateParams());
         }
 
-        public IntPtr StaticHandle
+        public static IntPtr StaticHandle
         {
             get
             {

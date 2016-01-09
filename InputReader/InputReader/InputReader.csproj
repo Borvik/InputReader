@@ -41,8 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeviceManager.cs" />
+    <Compile Include="Devices\BatchKeyboard.cs" />
+    <Compile Include="Devices\DetectKeyboard.cs" />
+    <Compile Include="Devices\Keyboard.cs" />
     <Compile Include="Native\HiddenWindow.cs" />
-    <Compile Include="Native\NativeMethods.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="Native\ButtonFlag.cs" />
     <Compile Include="Native\MouseFlag.cs" />
     <Compile Include="Native\RAWHID.cs" />

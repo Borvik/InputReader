@@ -44,6 +44,7 @@ namespace InputReaderDemo
                     ReleaseDevice();
                     break;
             }
+            txtTestBox.Focus();
         }
 
         private async void CaptureDevice()

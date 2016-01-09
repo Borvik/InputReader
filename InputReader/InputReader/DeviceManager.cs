@@ -88,5 +88,11 @@ namespace Treorisoft.InputReader
             Listen(origKeyboard);
             return detectedDevice;
         }
+
+        public static void CancelDetectKeyboard()
+        {
+            if (manager.DetectKeyboardTask != null && !manager.DetectKeyboardTask.Task.IsCompleted)
+                manager.DetectKeyboardTask.SetResult(IntPtr.Zero);
+        }
     }
 }

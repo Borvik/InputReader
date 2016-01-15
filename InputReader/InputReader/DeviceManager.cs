@@ -66,33 +66,28 @@ namespace Treorisoft.InputReader
             return oldKeyboard;
         }
 
-        private TaskCompletionSource<IntPtr> DetectKeyboardTask = null;
+        private static TaskCompletionSource<IntPtr> DetectKeyboardTask = null;
         public static async Task<IntPtr> DetectKeyboard()
         {
+            DetectKeyboardTask = new TaskCompletionSource<IntPtr>();
+
             var kbd = new DetectKeyboard();
             kbd.KeyboardDetected += (_, device) =>
             {
-                manager.DetectKeyboardTask.SetResult(device);
+                DetectKeyboardTask.SetResult(device);
             };
 
             var origKeyboard = Listen(kbd);
-            var task = new TaskCompletionSource<IntPtr>();
-
-            IntPtr detectedDevice = IntPtr.Zero;
-            manager.DetectKeyboardTask = task;
-            await task.Task;
-            if (!task.Task.IsCanceled && !task.Task.IsFaulted)
-                detectedDevice = task.Task.Result;
-            manager.DetectKeyboardTask = null;
-
+            await DetectKeyboardTask.Task;
             Listen(origKeyboard);
-            return detectedDevice;
+
+            return DetectKeyboardTask.Task.Result;
         }
 
         public static void CancelDetectKeyboard()
         {
-            if (manager.DetectKeyboardTask != null && !manager.DetectKeyboardTask.Task.IsCompleted)
-                manager.DetectKeyboardTask.SetResult(IntPtr.Zero);
+            if (DetectKeyboardTask != null && !DetectKeyboardTask.Task.IsCompleted)
+                DetectKeyboardTask.SetResult(IntPtr.Zero);
         }
     }
 }

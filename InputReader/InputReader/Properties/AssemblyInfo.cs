@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("InputReader")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A library for handling multiple keyboard input events such as identifying and capturing data from keyboard mode barcode or MSR scanners.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Treorisoft")]
 [assembly: AssemblyProduct("InputReader")]

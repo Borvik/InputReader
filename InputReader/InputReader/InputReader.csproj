@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="DeviceManager.cs" />
     <Compile Include="Devices\BatchKeyboard.cs" />
+    <Compile Include="Devices\DebugKeyboard.cs" />
     <Compile Include="Devices\DetectKeyboard.cs" />
     <Compile Include="Devices\Keyboard.cs" />
     <Compile Include="Native\HiddenWindow.cs" />

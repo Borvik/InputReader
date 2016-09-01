@@ -21,13 +21,27 @@ namespace InputReaderDemo
             InitializeComponent();
         }
 
-        private void Log(string message)
+        private enum LogType
         {
-            txtLog.AppendText(message + Environment.NewLine);
+            Test,
+            Debug
         }
-        private void Log(string message, params object[] args)
+
+        private void Log(LogType logType, string message)
         {
-            Log(string.Format(message, args));
+            switch (logType)
+            {
+                case LogType.Debug:
+                    txtDebugLog.AppendText(message + Environment.NewLine);
+                    break;
+                case LogType.Test:
+                    txtLog.AppendText(message + Environment.NewLine);
+                    break;
+            }
+        }
+        private void Log(LogType logType, string message, params object[] args)
+        {
+            Log(logType, string.Format(message, args));
         }
 
         private void cmdAction_Click(object sender, EventArgs e)
@@ -54,19 +68,19 @@ namespace InputReaderDemo
                 cmdAction.Text = "Stop Capture";
                 IntPtr deviceId = await DeviceManager.DetectKeyboard();
                 if (deviceId == IntPtr.Zero)
-                    Log("Failed to capture device");
+                    Log(LogType.Test, "Failed to capture device");
                 else
                 {
                     scanner = new BatchKeyboard(deviceId);
                     scanner.BatchReceived += Scanner_BatchReceived;
-                    DeviceManager.Listen(scanner);
-                    Log("Captured device ({0})", deviceId);
+                    StartListen(scanner);
+                    Log(LogType.Test, "Captured device ({0})", deviceId);
                     cmdAction.Text = "Release Device";
                 }
             }
             catch (Exception ex)
             {
-                Log("Error capturing device: " + ex.Message);
+                Log(LogType.Test, "Error capturing device: " + ex.Message);
             }
         }
 
@@ -76,20 +90,81 @@ namespace InputReaderDemo
             cmdAction.Text = "Capture Device";
         }
 
+        private void StartListen(Keyboard device)
+        {
+            if (DeviceManager.IsKeyboardListening())
+                ResetButtons();
+            DeviceManager.Listen(device);
+        }
+
         private void ReleaseDevice()
         {
             DeviceManager.Listen(null);
-            scanner.BatchReceived -= Scanner_BatchReceived;
-            scanner = null;
+            if (scanner != null)
+            {
+                scanner.BatchReceived -= Scanner_BatchReceived;
+                scanner = null;
+            }
+            if(debugScanner != null)
+            {
+                debugScanner.BatchReceived -= Debug_BatchReceived;
+                debugScanner = null;
+            }
+            ResetButtons();
+        }
+
+        private void ResetButtons()
+        {
             cmdAction.Text = "Capture Device";
+            cmdStartStopDebug.Text = "Start Debug";
         }
 
         private void Scanner_BatchReceived(object sender, string e)
         {
             if (txtLog.InvokeRequired)
-                txtLog.Invoke((MethodInvoker)delegate { Log("Batch Input: {0}", e); });
+                txtLog.Invoke((MethodInvoker)delegate { Log(LogType.Test, "Batch Input: {0}", e); });
             else
-                Log("Batch Input: {0}", e);
+                Log(LogType.Test, "Batch Input: {0}", e);
         }
+
+        private void cmdStartStopDebug_Click(object sender, EventArgs e)
+        {
+            switch (cmdStartStopDebug.Text)
+            {
+                case "Start Debug":
+                    StartDebug();
+                    break;
+                case "Stop Debug":
+                    ReleaseDevice();
+                    break;
+            }
+        }
+
+        DebugKeyboard debugScanner = null;
+        private void StartDebug()
+        {
+            cmdStartStopDebug.Enabled = false;
+            try
+            {
+                debugScanner = new DebugKeyboard();
+                debugScanner.BatchReceived += Debug_BatchReceived;
+                StartListen(debugScanner);
+                Log(LogType.Debug, "Debugging Started");
+                cmdStartStopDebug.Text = "Stop Debug";
+            }
+            catch (Exception ex)
+            {
+                Log(LogType.Debug, "Error capturing device: " + ex.Message);
+            }
+            cmdStartStopDebug.Enabled = true;
+        }
+        private void Debug_BatchReceived(object sender, DebugKeyboard.DebugBatchReceivedEventArgs e)
+        {
+            if (txtLog.InvokeRequired)
+                txtLog.Invoke((MethodInvoker)delegate { Log(LogType.Debug, "Batch Input ({0}): {1}", e.Device, e.Data); });
+            else
+                Log(LogType.Debug, "Batch Input ({0}): {1}", e.Device, e.Data);
+        }
+
     }
 }

@@ -27,6 +27,11 @@ namespace Treorisoft.InputReader
             return false;
         }
 
+        public static bool IsKeyboardListening()
+        {
+            return (keyboard != null);
+        }
+
         public static Keyboard Listen(Keyboard device)
         {
             var oldKeyboard = keyboard;

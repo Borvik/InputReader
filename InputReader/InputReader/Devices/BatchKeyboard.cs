@@ -76,6 +76,9 @@ namespace Treorisoft.InputReader.Devices
                 case Keys.Tab:
                     data = '\t';
                     break;
+                case Keys.Return:
+                    data = '\r';
+                    break;
             }
             if (data.HasValue)
                 CapturedChars.Append(data.Value);
